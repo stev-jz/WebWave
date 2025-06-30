@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation';
 import { FaHome, FaMusic } from 'react-icons/fa';
 
 const navLinks = [
-    {href: '/home', label: 'Music Player', icon: <FaMusic/>},
-    {href: '/dragndrop', label: 'Drag and Drop', icon: <FaHome/>},
-    {href: '/downloads', label: 'Downloads', icon: <FaHome/>},
-]
+  { href: '/home', label: 'Music Player', icon: <FaMusic /> },
+  { href: '/dragndrop', label: 'Drag and Drop', icon: <FaHome /> },
+  { href: '/downloads', label: 'Downloads', icon: <FaHome /> },
+  { href: '/settings', label: 'Settings', icon: <FaHome /> }
+];
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -29,6 +30,18 @@ export default function Sidebar() {
           </Link>
         ))}
       </nav>
+      <div className="absolute bottom-6 left-6 right-6 flex gap-2">
+        <Link href="/login" className="flex-1">
+            <button className="w-full bg-white text-black px-4 py-2 rounded-md hover:bg-zinc-200">
+            Login
+            </button>
+        </Link>
+        <Link href="/signup" className="flex-1">
+            <button className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+            Sign Up
+            </button>
+        </Link>
+      </div>
     </aside>
   );
 }
