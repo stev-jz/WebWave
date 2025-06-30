@@ -1,5 +1,56 @@
-export default function Login(){
-    return (
-        <h1>login </h1>
-    )
+'use client'
+
+import { useState } from 'react'
+import { supabase } from '../../../supabaseClient'
+import { useRouter } from 'next/navigation'
+
+export default function SignupPage() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+
+    if (error) {
+      setError(error.message)
+    } else {
+      router.push('/login') // Or wherever you want
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+      <h1 className="text-2xl font-bold mb-4">Sign Up</h1>
+      <form onSubmit={handleSignup} className="flex flex-col gap-4 w-full max-w-sm">
+        <input
+          type="email"
+          placeholder="Email"
+          className="p-2 border rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="p-2 border rounded"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit" className="bg-green-600 text-white p-2 rounded hover:bg-green-700">
+          Sign Up
+        </button>
+        {error && <p className="text-red-600">{error}</p>}
+      </form>
+    </div>
+  )
 }

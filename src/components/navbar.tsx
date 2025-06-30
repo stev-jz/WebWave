@@ -6,7 +6,7 @@ import { FaHome, FaMusic } from 'react-icons/fa';
 
 const navLinks = [
   { href: '/home', label: 'Music Player', icon: <FaMusic /> },
-  { href: '/dragndrop', label: 'Drag and Drop', icon: <FaHome /> },
+  { href: '/drag', label: 'Drag and Drop Audio', icon: <FaHome /> },
   { href: '/downloads', label: 'Downloads', icon: <FaHome /> },
   { href: '/settings', label: 'Settings', icon: <FaHome /> }
 ];
@@ -16,7 +16,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 h-screen bg-zinc-900 text-white fixed left-0 top-0 p-6">
-      <h1 className="text-2xl font-bold mb-8">🎵 WebWave</h1>
+      <Link href="/home"><h1 className="text-2xl font-bold mb-8">🎵 WebWave</h1></Link>
       <nav className="space-y-4">
         {navLinks.map(({ href, label, icon }) => (
           <Link
