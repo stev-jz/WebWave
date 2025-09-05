@@ -1,56 +1,45 @@
-// app/drag/page.tsx
-"use client";
+'use client'
 
-import { useState, useEffect } from "react";
-import DropZoneOverlay from "@/components/DropZoneOverlay";
+import { supabase } from '../../../supabaseClient'
+import { useState } from 'react'
 
 export default function DragPage() {
-  const [dragActive, setDragActive] = useState(false);
+  const [uploading, setUploading] = useState(false)
 
-  useEffect(() => {
-    const handleDragEnter = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDragActive(true);
-    };
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    const file = e.dataTransfer.files[0]
 
-    const handleDragLeave = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDragActive(false);
-    };
+    if (!file || file.type !== 'audio/mpeg') return alert('Please drop an MP3 file.')
 
-    const handleDrop = (e: DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDragActive(false);
-      const files = e.dataTransfer?.files;
-      if (files && files.length > 0) {
-        // Handle MP3 upload
-        console.log("Dropped files:", files);
-      }
-    };
+    const filePath = `${Date.now()}_${file.name}`
 
-    window.addEventListener("dragenter", handleDragEnter);
-    window.addEventListener("dragleave", handleDragLeave);
-    window.addEventListener("drop", handleDrop);
-    window.addEventListener("dragover", handleDragEnter);
+    setUploading(true)
+    const { error } = await supabase.storage
+      .from('mp3')
+      .upload(filePath, file, {
+        contentType: 'audio/mpeg',
+        upsert: false,
+      })
 
-    return () => {
-      window.removeEventListener("dragenter", handleDragEnter);
-      window.removeEventListener("dragleave", handleDragLeave);
-      window.removeEventListener("drop", handleDrop);
-      window.removeEventListener("dragover", handleDragEnter);
-    };
-  }, []);
+    setUploading(false)
+
+    if (error) {
+      alert('Upload failed: ' + error.message)
+    } else {
+      alert('Upload successful!')
+    }
+  }
 
   return (
-    <div className="relative min-h-screen">
-      <DropZoneOverlay isActive={dragActive} />
-      <div className="p-8">
-        <h1 className="text-3xl font-bold">Upload Your MP3</h1>
-        <p className="text-gray-600 mt-2">Drag and drop to upload.</p>
-      </div>
+    <div
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDrop}
+      className="w-full h-screen flex items-center justify-center border-4 border-dashed border-purple-400 bg-purple-100"
+    >
+      <p className="text-xl text-purple-700">
+        {uploading ? 'Uploading...' : 'Drop your MP3 file here'}
+      </p>
     </div>
-  );
+  )
 }
