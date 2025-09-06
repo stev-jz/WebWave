@@ -10,7 +10,6 @@ export default function GlobalAudioPlayer() {
   const { user } = useAuth()
   const { audioPlayer } = useGlobalAudio()
   const {
-    audioRef,
     currentSong,
     isPlaying,
     isLoading,

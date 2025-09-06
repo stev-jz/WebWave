@@ -30,7 +30,7 @@ export default function SignupPage() {
     try {
       await signUp(email, password)
       router.push('/home')
-    } catch (err) {
+    } catch {
       // Error is handled by the auth context
     }
   }

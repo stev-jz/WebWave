@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { FaHome, FaMusic, FaYoutube, FaDownload, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaMusic, FaYoutube, FaCog, FaSignOutAlt } from 'react-icons/fa';
 
 const navLinks = [
   { href: '/home', label: 'Your Library', icon: <FaMusic /> },

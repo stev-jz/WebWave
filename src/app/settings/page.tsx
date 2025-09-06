@@ -78,7 +78,7 @@ export default function SettingsPage() {
           <h2 className="text-xl font-semibold mb-4 text-red-400">Danger Zone</h2>
           <div className="space-y-4">
             <p className="text-gray-300 text-sm">
-              Once you sign out, you'll need to sign back in to access your music library.
+              Once you sign out, you&apos;ll need to sign back in to access your music library.
             </p>
             <button
               onClick={handleLogout}

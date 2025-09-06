@@ -12,7 +12,7 @@ export default function HomePage() {
   const { user } = useAuth()
   const { songs, loadUserSongs, audioPlayer } = useGlobalAudio()
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [error] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
 
   // Initial load is handled by AudioProvider. We only manage local loading state here.
