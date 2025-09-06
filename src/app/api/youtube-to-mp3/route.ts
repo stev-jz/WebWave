@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Try to use @distube/ytdl-core as it's more maintained
-    let ytdl: any
+    let ytdl: typeof import('ytdl-core')
     try {
       const distube = await import('@distube/ytdl-core')
       ytdl = distube.default

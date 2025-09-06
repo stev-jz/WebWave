@@ -177,7 +177,7 @@ export default function DragPage() {
               <div className="text-sm text-gray-300 space-y-1">
                 <p>1. Copy a YouTube video URL</p>
                 <p>2. Paste it in the field above</p>
-                <p>3. Click "Convert & Add to Library"</p>
+                <p>3. Click &quot;Convert &amp; Add to Library&quot;</p>
                 <p>4. Wait for conversion and upload to complete</p>
               </div>
             </div>
