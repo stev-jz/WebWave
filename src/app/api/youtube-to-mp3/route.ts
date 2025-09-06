@@ -142,6 +142,8 @@ export async function POST(request: NextRequest) {
         errorMessage = 'Video is not available in your region'
       } else if (error.message.includes('Private video')) {
         errorMessage = 'Video is private'
+      } else if (error.message.includes('Sign in to confirm you\'re not a bot') || error.message.includes('not a bot')) {
+        errorMessage = 'YouTube error: Sign in to confirm you\'re not a bot'
       } else {
         errorMessage = `YouTube error: ${error.message}`
       }
