@@ -180,3 +180,51 @@ export const deleteSong = async (songId: string, filePath: string): Promise<void
   
   if (dbError) throw dbError
 }
+
+export const deleteUserAccount = async (userId: string): Promise<void> => {
+  try {
+    // 1. Get all user's songs to get file paths
+    const { data: userSongs, error: songsError } = await supabase
+      .from('songs')
+      .select('file_path')
+      .eq('user_id', userId)
+    
+    if (songsError) throw songsError
+    
+    // 2. Delete all user's files from storage
+    if (userSongs && userSongs.length > 0) {
+      const filePaths = userSongs.map(song => song.file_path)
+      const { error: storageError } = await supabase.storage
+        .from('mp3')
+        .remove(filePaths)
+      
+      if (storageError) throw storageError
+    }
+    
+    // 3. Delete all user's songs from database
+    const { error: songsDeleteError } = await supabase
+      .from('songs')
+      .delete()
+      .eq('user_id', userId)
+    
+    if (songsDeleteError) throw songsDeleteError
+    
+    // 4. Call API route to delete user from auth
+    const response = await fetch('/api/delete-account', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ userId }),
+    })
+    
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'Failed to delete account')
+    }
+    
+  } catch (error) {
+    console.error('Error deleting user account:', error)
+    throw error
+  }
+}

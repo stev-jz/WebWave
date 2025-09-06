@@ -1,15 +1,30 @@
 'use client';
 
+import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { deleteUserAccount } from '@/lib/supabaseHelpers'
+import { useRouter } from 'next/navigation'
 
 export default function SettingsPage() {
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
+  const router = useRouter()
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [showConfirm, setShowConfirm] = useState(false)
 
-  const handleLogout = async () => {
+  const handleDeleteAccount = async () => {
+    if (!user) return
+
+    setIsDeleting(true)
     try {
-      await signOut()
+      await deleteUserAccount(user.id)
+      // User will be automatically signed out by the API
+      router.push('/')
     } catch (error) {
-      console.error('Logout failed:', error)
+      console.error('Delete account failed:', error)
+      alert('Failed to delete account. Please try again.')
+    } finally {
+      setIsDeleting(false)
+      setShowConfirm(false)
     }
   }
 
@@ -78,14 +93,43 @@ export default function SettingsPage() {
           <h2 className="text-xl font-semibold mb-4 text-red-400">Danger Zone</h2>
           <div className="space-y-4">
             <p className="text-gray-300 text-sm">
-              Once you sign out, you&apos;ll need to sign back in to access your music library.
+              Permanently delete your account and all associated data. This action cannot be undone.
             </p>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-            >
-              Sign Out
-            </button>
+            {!showConfirm ? (
+              <button
+                onClick={() => setShowConfirm(true)}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors cursor-pointer"
+              >
+                Delete Account
+              </button>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-red-300 text-sm font-medium">
+                  Are you sure? This will permanently delete:
+                </p>
+                <ul className="text-gray-300 text-sm space-y-1 ml-4">
+                  <li>• Your account and profile</li>
+                  <li>• All your uploaded songs</li>
+                  <li>• All your music library data</li>
+                </ul>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={handleDeleteAccount}
+                    disabled={isDeleting}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    {isDeleting ? 'Deleting...' : 'Yes, Delete My Account'}
+                  </button>
+                  <button
+                    onClick={() => setShowConfirm(false)}
+                    disabled={isDeleting}
+                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

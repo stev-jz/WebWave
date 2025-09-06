@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -8,8 +8,15 @@ import Link from 'next/link'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const { signIn, error, loading } = useAuth()
+  const { signIn, error, loading, user } = useAuth()
   const router = useRouter()
+
+  // Redirect to home when user becomes authenticated
+  useEffect(() => {
+    if (user) {
+      router.push('/home')
+    }
+  }, [user, router])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,12 +72,15 @@ export default function LoginPage() {
           )}
         </form>
         
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-2">
           <p className="text-gray-400">
             Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-green-400 hover:text-green-300 cursor-pointer">
               Sign up
             </Link>
+          </p>
+          <p className="text-xs text-gray-500">
+            If you signed up recently, please check your email for a confirmation link
           </p>
         </div>
       </div>

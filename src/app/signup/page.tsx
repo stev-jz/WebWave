@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -10,8 +10,15 @@ export default function SignupPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [localError, setLocalError] = useState<string | null>(null)
-  const { signUp, error, loading } = useAuth()
+  const { signUp, error, loading, user } = useAuth()
   const router = useRouter()
+
+  // Redirect to home when user becomes authenticated
+  useEffect(() => {
+    if (user) {
+      router.push('/home')
+    }
+  }, [user, router])
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()

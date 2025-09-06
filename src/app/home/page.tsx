@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useGlobalAudio } from '@/contexts/AudioContext'
 import { deleteSong } from '@/lib/supabaseHelpers'
@@ -9,21 +9,24 @@ import { FaTrash } from 'react-icons/fa'
 import GlobalAudioPlayer from '@/components/GlobalAudioPlayer'
 
 export default function HomePage() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const { songs, loadUserSongs, audioPlayer } = useGlobalAudio()
   const [loading, setLoading] = useState(true)
   const [error] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<string | null>(null)
 
-  // Initial load is handled by AudioProvider. We only manage local loading state here.
-  if (loading && user) {
-    // Mark as loaded when songs are available in context
-    if (songs) {
-      setLoading(false)
+  // Wait for auth to finish loading before checking user state
+  useEffect(() => {
+    if (!authLoading) {
+      if (user) {
+        // User is authenticated, mark as loaded
+        setLoading(false)
+      } else {
+        // No user, mark as loaded so we can show the login message
+        setLoading(false)
+      }
     }
-  } else if (loading && !user) {
-    setLoading(false)
-  }
+  }, [authLoading, user])
 
   const handleDelete = async (song: Song) => {
     if (!confirm(`Are you sure you want to delete "${song.title}"?`)) {
@@ -48,6 +51,17 @@ export default function HomePage() {
     audioPlayer.playFromPlaylist(songs, index)
   }
 
+
+  // Show loading while auth is being determined
+  if (authLoading) {
+    return (
+      <div className="p-8">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        </div>
+      </div>
+    )
+  }
 
   if (!user) {
     return (
