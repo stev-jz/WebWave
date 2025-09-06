@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { getUserSongs } from '@/lib/supabaseHelpers'
 import { Song } from '@/types'
@@ -18,22 +18,24 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth()
   const [songs, setSongs] = useState<Song[]>([])
   const audioPlayer = useAudioPlayer()
+  const audioPlayerRef = useRef(audioPlayer)
+
+  // Keep ref in sync
+  useEffect(() => {
+    audioPlayerRef.current = audioPlayer
+  }, [audioPlayer])
 
   const loadUserSongs = useCallback(async () => {
     if (!user) return
 
     try {
       const userSongs = await getUserSongs(user.id)
-      // Only update if the list actually changed to avoid reloading current track
-      const changed = JSON.stringify(userSongs.map(s => s.id)) !== JSON.stringify(songs.map(s => s.id))
       setSongs(userSongs)
-      if (changed) {
-        audioPlayer.setPlaylist(userSongs)
-      }
+      audioPlayerRef.current.setPlaylist(userSongs)
     } catch (error) {
       console.error('Error loading songs:', error)
     }
-  }, [user, songs, audioPlayer])
+  }, [user])
 
   // Load songs when user changes
   useEffect(() => {
@@ -41,9 +43,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       loadUserSongs()
     } else {
       setSongs([])
-      audioPlayer.setPlaylist([])
+      audioPlayerRef.current.setPlaylist([])
     }
-  }, [user, loadUserSongs, audioPlayer])
+  }, [user, loadUserSongs])
 
   return (
     <>
