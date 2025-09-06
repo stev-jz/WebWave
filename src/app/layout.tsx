@@ -1,18 +1,24 @@
-import Sidebar from '@/components/navbar';
-import './globals.css';
+import { AuthProvider } from '@/hooks/useAuth'
+import { AudioProvider } from '@/contexts/AudioContext'
+import Sidebar from '@/components/navbar'
+import './globals.css'
 
 export const metadata = {
   title: 'WebWave',
-  description: 'Spotify-style MP3 player app',
-};
+  description: 'Full-stack music streaming platform with drag-and-drop uploads',
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="bg-black text-white">
-        <Sidebar />
-        <main className="ml-64 p-6">{children}</main>
+        <AuthProvider>
+          <AudioProvider>
+            <Sidebar />
+            <main className="ml-64">{children}</main>
+          </AudioProvider>
+        </AuthProvider>
       </body>
     </html>
-  );
+  )
 }
