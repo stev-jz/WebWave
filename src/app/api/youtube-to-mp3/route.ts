@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     // Download audio stream
     const audioStream = ytdl(youtubeUrl, {
       quality: 'highestaudio',
-      filter: 'audioonly',
+      filter: 'audioonly'
     })
     
     // Convert stream to buffer
