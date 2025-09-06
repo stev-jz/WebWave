@@ -31,7 +31,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Try to use @distube/ytdl-core as it's more maintained
-    let ytdl: typeof import('ytdl-core')
+    let ytdl: {
+      getInfo: (url: string) => Promise<{
+        videoDetails: {
+          title: string
+          lengthSeconds: string
+          author?: { name: string }
+        }
+      }>
+      (url: string, options?: { quality?: string; filter?: 'audioonly' | 'videoonly' | 'videoandaudio' }): NodeJS.ReadableStream
+    }
     try {
       const distube = await import('@distube/ytdl-core')
       ytdl = distube.default
@@ -70,7 +79,7 @@ export async function POST(request: NextRequest) {
     // Convert stream to buffer
     const chunks: Buffer[] = []
     
-    return new Promise((resolve, reject) => {
+    return new Promise<Response>((resolve, reject) => {
       audioStream.on('data', (chunk: Buffer) => {
         chunks.push(chunk)
       })
